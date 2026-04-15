@@ -1,51 +1,31 @@
-import time
-from data_feed import get_symbols, get_price
-from scanner import scan_market
-from brain import decide
-from execution_engine import execute
-from learning_engine import learn
+from trainer import train
+from scanner import get_state
 
-print("🤖 HEDGE FUND AI V12 STARTED")
+import random
 
-def fake_market():
+print("🤖 HEDGE FUND AI V15 RL STARTED")
 
-    import random
+agent = train()
 
-    coins = []
-
-    for i in range(80):
-
-        coins.append({
-            "symbol": f"COIN{i}/USDT",
-            "price": 100,
-            "trend_5m": random.choice(["UP","DOWN"]),
-            "trend_1h": random.choice(["UP","DOWN"]),
-            "volume": random.uniform(1,2),
-            "momentum": random.uniform(1,2),
-            "volatility": random.uniform(0.8,2),
-            "near_resistance": random.choice([True,False])
-        })
-
-    return coins
-
+balance = 1000
+position = None
 
 while True:
 
-    market = fake_market()
+    state = get_state()
 
-    signals = scan_market(market)
+    action = agent.act(state)
 
-    trade = decide(signals)
+    price = 100 + random.uniform(-2,2)
 
-    if trade:
+    if action == 1:
+        position = price
 
-        price = trade["price"]
+    elif action == 2 and position:
+        profit = price - position
+        balance += profit
+        position = None
 
-        result = execute(trade, price)
+        print("💰 Trade closed | Profit:", profit)
 
-        if result in ["TP", "SL"]:
-            learn("WIN" if result == "TP" else "LOSS")
-
-    print("Cycle complete...")
-
-    time.sleep(10)
+    print("Balance:", balance)
