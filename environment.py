@@ -1,28 +1,23 @@
+class TradingEnv:
 
-positions = {}
+    def __init__(self):
+        self.balance = 1000
+        self.position = None
 
-def execute(trade, price):
+    def step(self, action, price):
 
-    symbol = trade["symbol"]
+        reward = 0
 
-    if symbol not in positions:
+        # BUY
+        if action == 1 and self.position is None:
+            self.position = price
 
-        positions[symbol] = {
-            "entry": price,
-            "tp": price * 1.05,
-            "sl": price * 0.98
-        }
+        # SELL
+        elif action == 2 and self.position is not None:
 
-        return "OPEN"
+            reward = price - self.position
+            self.balance += reward
+            self.position = None
 
-    pos = positions[symbol]
-
-    if price >= pos["tp"]:
-        del positions[symbol]
-        return "TP"
-
-    if price <= pos["sl"]:
-        del positions[symbol]
-        return "SL"
-
-    return None
+        # HOLD
+        return reward
