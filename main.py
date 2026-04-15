@@ -6,8 +6,8 @@ import pandas as pd
 # =========================
 # 📲 TELEGRAM
 # =========================
-TOKEN = "PUT_TOKEN"
-CHAT_ID = "PUT_CHAT_ID"
+TOKEN = "8439548325:AAHOBBHy7EwcX3J5neIaf6iJuSjyGJCuZ68"
+CHAT_ID = "5067771509"
 
 def send_message(msg):
     if not TOKEN or not CHAT_ID:
