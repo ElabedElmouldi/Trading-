@@ -1,20 +1,9 @@
+import random
 
-from strategy import score_asset
+def get_state():
 
-def scan_market(market):
-
-    results = []
-
-    for c in market:
-
-        score = score_asset(c)
-
-        if score >= 80:
-
-            results.append({
-                "symbol": c["symbol"],
-                "price": c["price"],
-                "score": score
-            })
-
-    return sorted(results, key=lambda x: x["score"], reverse=True)[:3]
+    return {
+        "trend": random.choice([0,1]),
+        "momentum": random.uniform(-1,1),
+        "volume": random.uniform(0,2)
+    }
