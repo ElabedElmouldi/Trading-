@@ -1,31 +1,74 @@
-from trainer import train
-from scanner import get_state
+import time
 
-import random
+from scanner import scan_market
+from brain import decide
+from execution_engine import execute
+from learning_engine import learn
+from portfolio import portfolio
+from telegram import send_message
 
-print("🤖 HEDGE FUND AI V15 RL STARTED")
 
-agent = train()
+# 🚀 START SYSTEM
+print("🤖 HEDGE FUND AI V16 STARTED")
 
-balance = 1000
-position = None
+send_message("🚀 Hedge Fund AI V16 Started Successfully")
+
+
+cycle = 0
 
 while True:
 
-    state = get_state()
+    cycle += 1
 
-    action = agent.act(state)
+    print(f"\n🔄 CYCLE {cycle}")
 
-    price = 100 + random.uniform(-2,2)
+    # 📊 1. Scan Market
+    signals = scan_market()
 
-    if action == 1:
-        position = price
+    if not signals:
+        print("No signals found")
+        time.sleep(10)
+        continue
 
-    elif action == 2 and position:
-        profit = price - position
-        balance += profit
-        position = None
 
-        print("💰 Trade closed | Profit:", profit)
+    # 🧠 2. Decide best trade
+    trade = decide(signals)
 
-    print("Balance:", balance)
+
+    if trade:
+
+        print(f"🔥 SIGNAL FOUND: {trade['symbol']} | SCORE: {trade['score']}")
+
+        # 💰 3. Execute trade (simulation / paper trading)
+        result = execute(trade, trade["price"])
+
+        print(f"📊 EXECUTION RESULT: {result}")
+
+        # 🧠 4. Learning system
+        if result:
+            learn(result)
+
+        # 📲 5. Telegram notification
+        send_message(
+            f"📊 TRADE UPDATE\n"
+            f"Symbol: {trade['symbol']}\n"
+            f"Price: {trade['price']}\n"
+            f"Result: {result}\n"
+            f"Score: {trade['score']}"
+        )
+
+    else:
+        print("⚠️ No high-quality trade selected")
+
+
+    # 💼 6. Portfolio status
+    send_message(
+        f"💼 PORTFOLIO STATUS\n"
+        f"Balance: {portfolio['balance']}\n"
+        f"Open Positions: {len(portfolio['positions'])}\n"
+        f"Cycle: {cycle}"
+    )
+
+
+    # ⏱️ Delay between scans
+    time.sleep(15)
