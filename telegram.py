@@ -1,16 +1,21 @@
-import os, requests
+import os
+import requests
 
-def send(msg):
+TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
-    token = os.getenv("BOT_TOKEN")
-    chat = os.getenv("CHAT_ID")
+def send_message(text):
 
-    if not token or not chat:
+    if not TOKEN or not CHAT_ID:
+        print("⚠️ Telegram not configured")
         return
 
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
-    requests.post(url, data={
-        "chat_id": chat,
-        "text": msg
-    })
+    try:
+        requests.post(url, data={
+            "chat_id": CHAT_ID,
+            "text": text
+        })
+    except Exception as e:
+        print("Telegram error:", e)
